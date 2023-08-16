@@ -11,7 +11,12 @@ import os, glob
     default="/mnt/str/models/llama-13b-4bit-128g/",
     help="Directory containing model, tokenizer, generator",
 )
-def batch(model_dir):
+@click.option(
+    "--batch-size",
+    default=4,
+    help="Batch size",
+)
+def batch(model_dir, batch_size):
     # Directory containing model, tokenizer, generator
 
     # Locate files we need within that directory
@@ -40,7 +45,7 @@ def batch(model_dir):
         tokenizer_path
     )  # create tokenizer from tokenizer model file
 
-    cache = ExLlamaCache(model, batch_size=len(prompts))  # create cache for inference
+    cache = ExLlamaCache(model, batch_size=batch_size)  # create cache for inference
     generator = ExLlamaGenerator(model, tokenizer, cache)  # create generator
 
     # Configure generator
