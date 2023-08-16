@@ -61,21 +61,17 @@ def batch(model_dir, batch_size):
 
     # Generate, batched
 
-    for line in prompts:
-        print(line)
-
     for batch_idx in range(0, len(prompts), batch_size):
         output = generator.generate_simple(
             prompts[batch_idx : batch_idx + batch_size], max_new_tokens=300
         )
 
         if type(output) == str:
-            print(output)
-            print("----------------")
+            output = [output]
         else:
-            for line in output:
-                print(line)
-                print("----------------")
+            prompts_and_outputs = list(zip(prompts, output))
+            for pair in prompts_and_outputs:
+                print(f"\n------------------------\nPrompt: '{pair[0]}'\nOutput: '{pair[1]}'\n'")
 
 
 if __name__ == "__main__":
