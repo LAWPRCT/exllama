@@ -8,11 +8,21 @@ from rich import print
 from string import Template
 
 OPEN_INSTRUCT_TEMPLATE = Template("""
-Below is an instruction that describes a task. Write a response that appropriately completes the request
+### System:
+Read the user's text and return valid JSON with the following keys:
+- "corrected": the text with line-to-line hyphens removed and errors replaced
+- "paraphrase": a paraphrase of the text, written in third person
+- "people": an array of strings of people mentioned in the text
+- "places": an array of strings of places mentioned in the text
+- "organizations": an array of strings organizations mentioned in the text
+- "key_date": the most important date mentioned in the text as an ISO date string
+- "key_date_precision": datetime|date|month|year
+- "topics": an array of topics mentioned in the text
 
-### Instruction: $prompt
+### User:
+$prompt
 
-### Response:
+### Assistant:
 """)
 
 
@@ -45,9 +55,9 @@ def batch(model_dir, batch_size, max_new_tokens):
     # Batched prompts
 
     inputs = [
-        "Show me the steps for determining the first 5 digits of pi",
-        "Write a short python script to generate fibonacci numbers",
-        "Translate this text into French: 'The quick brown fox jumped over the lazy dog'",
+        "On July 22, 2016, Rebekah Mercer — Robert’s powerful daughter — emailed Steve Bannon from her Stanford alumni account. She wanted the Breitbart executive chairman, whom she introduced as “one of the greatest living defenders of Liberty,” to meet an app developer she knew. Apple had rejected the man’s game (Capitol HillAwry, in which players delete emails a la Hillary Clinton) from the App Store, and the younger Mercer wondered “if we could put an article up detailing his 1st amendment political persecution.”",
+        "twas a Friday night in early November and Fox News host Tucker Carlson was preaching to the camera about leftists sowing “racial divisions” throughout America. Reacting to an article in The Washington Post about a principal at a Maryland high school investigating an incident in which someone posted fliers proclaiming, “It’s Okay to Be White.” Carlson claimed to see evidence of an anti-white agenda at play in the Post report. The segment was typical Fox News fodder, but with an exception: Carlson was 19 forward a meme promoted by white supremacists, and he was doing so exactly as they had intended him to do",
+        "The purpose of creating this network was to obscure Valeant’s role in the aggressive pharmacy-led promotion and sale of its price-gouged drugs, and to create the appearance that ostensibly independent pharmacies across the country were promoting and selling Valeant products of their own volition and based on the merits of Valeant’s products. Moreover, as described herein, the network also allowed Valeant to implement deceptive practices designed to trick payors into reimbursing Valeant for drugs",
     ]
 
     prompts = [OPEN_INSTRUCT_TEMPLATE.substitute(prompt=inp) for inp in inputs]
