@@ -1,56 +1,63 @@
+import click
 from model import ExLlama, ExLlamaCache, ExLlamaConfig
 from tokenizer import ExLlamaTokenizer
 from generator import ExLlamaGenerator
 import os, glob
 
-# Directory containing model, tokenizer, generator
 
-model_directory =  "/mnt/str/models/llama-13b-4bit-128g/"
+@click.command()
+@click.option("--model-dir", default = "/mnt/str/models/llama-13b-4bit-128g/", help = "Directory containing model, tokenizer, generator"))    
+def batch(model_dir):
 
-# Locate files we need within that directory
+    # Directory containing model, tokenizer, generator
 
-tokenizer_path = os.path.join(model_directory, "tokenizer.model")
-model_config_path = os.path.join(model_directory, "config.json")
-st_pattern = os.path.join(model_directory, "*.safetensors")
-model_path = glob.glob(st_pattern)[0]
+    # Locate files we need within that directory
 
-# Batched prompts
+    tokenizer_path = os.path.join(model_dir, "tokenizer.model")
+    model_config_path = os.path.join(model_dir, "config.json")
+    st_pattern = os.path.join(model_dir, "*.safetensors")
+    model_path = glob.glob(st_pattern)[0]
 
-prompts = [
-    "Once upon a time,",
-    "I don't like to",
-    "A turbo encabulator is a",
-    "In the words of Mark Twain,"
-]
+    # Batched prompts
 
-# Create config, model, tokenizer and generator
+    prompts = [
+        "Once upon a time,",
+        "I don't like to",
+        "A turbo encabulator is a",
+        "In the words of Mark Twain,"
+    ]
 
-config = ExLlamaConfig(model_config_path)               # create config from config.json
-config.model_path = model_path                          # supply path to model weights file
+    # Create config, model, tokenizer and generator
 
-model = ExLlama(config)                                 # create ExLlama instance and load the weights
-tokenizer = ExLlamaTokenizer(tokenizer_path)            # create tokenizer from tokenizer model file
+    config = ExLlamaConfig(model_config_path)               # create config from config.json
+    config.model_path = model_path                          # supply path to model weights file
 
-cache = ExLlamaCache(model, batch_size = len(prompts))  # create cache for inference
-generator = ExLlamaGenerator(model, tokenizer, cache)   # create generator
+    model = ExLlama(config)                                 # create ExLlama instance and load the weights
+    tokenizer = ExLlamaTokenizer(tokenizer_path)            # create tokenizer from tokenizer model file
 
-# Configure generator
+    cache = ExLlamaCache(model, batch_size = len(prompts))  # create cache for inference
+    generator = ExLlamaGenerator(model, tokenizer, cache)   # create generator
 
-generator.disallow_tokens([tokenizer.eos_token_id])
+    # Configure generator
 
-generator.settings.token_repetition_penalty_max = 1.2
-generator.settings.temperature = 0.95
-generator.settings.top_p = 0.65
-generator.settings.top_k = 100
-generator.settings.typical = 0.5
+    generator.disallow_tokens([tokenizer.eos_token_id])
 
-# Generate, batched
+    generator.settings.token_repetition_penalty_max = 1.2
+    generator.settings.temperature = 0.95
+    generator.settings.top_p = 0.65
+    generator.settings.top_k = 100
+    generator.settings.typical = 0.5
 
-for line in prompts:
-    print(line)
+    # Generate, batched
 
-output = generator.generate_simple(prompts, max_new_tokens = 200)
+    for line in prompts:
+        print(line)
 
-for line in output:
-    print("---")
-    print(line)
+    output = generator.generate_simple(prompts, max_new_tokens = 200)
+
+    for line in output:
+        print("---")
+        print(line)
+
+if __name__ == "__main__":
+    batch()
