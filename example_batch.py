@@ -65,15 +65,11 @@ def batch(model_dir, batch_size):
 
     for batch_idx in range(0, len(prompts), batch_size):
         output = generator.generate_simple(
-            prompts[batch_idx : batch_idx + batch_size], max_new_tokens=2000
+            prompts[batch_idx : batch_idx + batch_size], max_new_tokens=300
         )
 
-        for line in output:
-            print(line)
-
-    for line in output:
-        print("---")
-        print(line)
+        print(output)
+        print("----------------")
 
 
 if __name__ == "__main__":
