@@ -17,7 +17,12 @@ from rich import print
     default=4,
     help="Batch size",
 )
-def batch(model_dir, batch_size):
+@click.option(
+    "--max-new-tokens",
+    default=300,
+    help="Maximum number of tokens to generate",
+)
+def batch(model_dir, batch_size, max_new_tokens):
     print(f"Using model directory: {model_dir} and batch size: {batch_size}")
 
     # Locate files we need within that directory
@@ -63,7 +68,7 @@ def batch(model_dir, batch_size):
 
     for batch_idx in range(0, len(prompts), batch_size):
         output = generator.generate_simple(
-            prompts[batch_idx : batch_idx + batch_size], max_new_tokens=300
+            prompts[batch_idx : batch_idx + batch_size], max_new_tokens=max_new_tokens
         )
 
         if type(output) == str:
