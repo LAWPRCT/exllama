@@ -68,8 +68,13 @@ def batch(model_dir, batch_size):
             prompts[batch_idx : batch_idx + batch_size], max_new_tokens=300
         )
 
-        print(output)
-        print("----------------")
+        if type(output) == str:
+            print(output)
+            print("----------------")
+        else:
+            for line in output:
+                print(line)
+                print("----------------")
 
 
 if __name__ == "__main__":
