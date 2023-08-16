@@ -18,7 +18,7 @@ from rich import print
     help="Batch size",
 )
 def batch(model_dir, batch_size):
-    # Directory containing model, tokenizer, generator
+    print(f"Using model directory: {model_dir} and batch size: {batch_size}")
 
     # Locate files we need within that directory
 
@@ -71,7 +71,7 @@ def batch(model_dir, batch_size):
         else:
             prompts_and_outputs = list(zip(prompts, output))
             for pair in prompts_and_outputs:
-                print(f"\n------------------------\nPrompt: '{pair[0]}'\nOutput: '{pair[1]}'\n'")
+                print(f"\n------------------------\nPrompt: `{pair[0]}`\n\nOutput: `{pair[1]}`\n'")
 
 
 if __name__ == "__main__":
