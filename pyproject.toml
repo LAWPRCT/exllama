@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "exllama"
+version = "0.1.0"
+description = ""
+authors = ["Jeff Kerr <jeff@casefleet.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "^2.0.1"
+ninja = "^1.11.1"
+safetensors = "0.3.1"
+sentencepiece = "^0.1.99"
+flask = "^2.3.2"
+waitress = "^2.1.2"
+
+[tool.poetry.group.dev.dependencies]
+ipdb = "^0.13.13"
+ipython = "^8.14.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
