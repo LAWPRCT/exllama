@@ -1,9 +1,19 @@
+import time
 import click
 from model import ExLlama, ExLlamaCache, ExLlamaConfig
 from tokenizer import ExLlamaTokenizer
 from generator import ExLlamaGenerator
 import os, glob
 from rich import print
+from string import Template
+
+OPEN_INSTRUCT_TEMPLATE = Template("""
+Below is an instruction that describes a task. Write a response that appropriately completes the request
+
+### Instruction: $prompt
+
+### Response:
+""")
 
 
 @click.command()
@@ -34,14 +44,17 @@ def batch(model_dir, batch_size, max_new_tokens):
 
     # Batched prompts
 
-    prompts = [
-        "Once upon a time,",
-        "I don't like to",
-        "A turbo encabulator is a",
-        "In the words of Mark Twain,",
+    inputs = [
+        "Show me the steps for determining the first 5 digits of pi",
+        "Write a short python script to generate fibonacci numbers",
+        "Translate this text into French: 'The quick brown fox jumped over the lazy dog'",
     ]
 
+    prompts = [OPEN_INSTRUCT_TEMPLATE.substitute(prompt=inp) for inp in inputs]
+
     # Create config, model, tokenizer and generator
+
+    t1 = time.time()
 
     config = ExLlamaConfig(model_config_path)  # create config from config.json
     config.model_path = model_path  # supply path to model weights file
@@ -76,7 +89,10 @@ def batch(model_dir, batch_size, max_new_tokens):
         else:
             prompts_and_outputs = list(zip(prompts, output))
             for pair in prompts_and_outputs:
-                print(f"\n------------------------\nPrompt: \n```\n{pair[0]}\n```\n\nOutput: \n```\n{pair[1]}\n```\n'")
+                print(f"\n------------------------\nPrompt: \n```\n{pair[0]}\n```\n\nOutput: \n```\n{pair[1]}\n```\n")
+
+    t2 = time.time()
+    print(f"Time taken: {t2-t1:,.2f} seconds")
 
 
 if __name__ == "__main__":
