@@ -3,6 +3,7 @@ from model import ExLlama, ExLlamaCache, ExLlamaConfig
 from tokenizer import ExLlamaTokenizer
 from generator import ExLlamaGenerator
 import os, glob
+from rich import print
 
 
 @click.command()
