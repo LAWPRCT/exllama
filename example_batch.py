@@ -6,9 +6,12 @@ import os, glob
 
 
 @click.command()
-@click.option("--model-dir", default = "/mnt/str/models/llama-13b-4bit-128g/", help = "Directory containing model, tokenizer, generator"))    
+@click.option(
+    "--model-dir",
+    default="/mnt/str/models/llama-13b-4bit-128g/",
+    help="Directory containing model, tokenizer, generator",
+)
 def batch(model_dir):
-
     # Directory containing model, tokenizer, generator
 
     # Locate files we need within that directory
@@ -24,19 +27,21 @@ def batch(model_dir):
         "Once upon a time,",
         "I don't like to",
         "A turbo encabulator is a",
-        "In the words of Mark Twain,"
+        "In the words of Mark Twain,",
     ]
 
     # Create config, model, tokenizer and generator
 
-    config = ExLlamaConfig(model_config_path)               # create config from config.json
-    config.model_path = model_path                          # supply path to model weights file
+    config = ExLlamaConfig(model_config_path)  # create config from config.json
+    config.model_path = model_path  # supply path to model weights file
 
-    model = ExLlama(config)                                 # create ExLlama instance and load the weights
-    tokenizer = ExLlamaTokenizer(tokenizer_path)            # create tokenizer from tokenizer model file
+    model = ExLlama(config)  # create ExLlama instance and load the weights
+    tokenizer = ExLlamaTokenizer(
+        tokenizer_path
+    )  # create tokenizer from tokenizer model file
 
-    cache = ExLlamaCache(model, batch_size = len(prompts))  # create cache for inference
-    generator = ExLlamaGenerator(model, tokenizer, cache)   # create generator
+    cache = ExLlamaCache(model, batch_size=len(prompts))  # create cache for inference
+    generator = ExLlamaGenerator(model, tokenizer, cache)  # create generator
 
     # Configure generator
 
@@ -53,11 +58,12 @@ def batch(model_dir):
     for line in prompts:
         print(line)
 
-    output = generator.generate_simple(prompts, max_new_tokens = 200)
+    output = generator.generate_simple(prompts, max_new_tokens=200)
 
     for line in output:
         print("---")
         print(line)
+
 
 if __name__ == "__main__":
     batch()

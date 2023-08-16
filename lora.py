@@ -4,8 +4,8 @@ import json
 from safetensors.torch import load_file as safe_load_file
 from torch import load as load_file
 
-class ExLlamaLora:
 
+class ExLlamaLora:
     lora_config_path: str
     lora_path: str
     lora_r: int
@@ -16,7 +16,6 @@ class ExLlamaLora:
     bias_ignored: bool
 
     def __init__(self, model, lora_config_path, lora_path):
-
         self.lora_config_path = lora_config_path
         self.lora_path = lora_path
         self.model = model
@@ -39,9 +38,9 @@ class ExLlamaLora:
         # Load LoRA weights
 
         if self.lora_path.endswith(".safetensors"):
-            f = safe_load_file(self.lora_path, device = "cpu")
+            f = safe_load_file(self.lora_path, device="cpu")
         else:
-            f = load_file(self.lora_path, map_location = "cpu")
+            f = load_file(self.lora_path, map_location="cpu")
 
         for key in f.keys():
             tensor = f[key]
@@ -49,7 +48,10 @@ class ExLlamaLora:
             # Find target
 
             i = key.find("model.layers.")
-            if i == -1: raise ValueError(f" ## Error: unsupported layer in {self.lora_path}: {key}")
+            if i == -1:
+                raise ValueError(
+                    f" ## Error: unsupported layer in {self.lora_path}: {key}"
+                )
 
             target_key = key[i:]
             ks = target_key.split(".")
@@ -61,23 +63,40 @@ class ExLlamaLora:
             if lora_half == "bias":
                 epsilon = 1e-6
                 if torch.max(tensor) > epsilon or torch.max(tensor) < -epsilon:
-                    raise ValueError(f" ## Error: unsupported bias target {self.lora_path}: {key}")
+                    raise ValueError(
+                        f" ## Error: unsupported bias target {self.lora_path}: {key}"
+                    )
                 self.bias_ignored = True
                 continue
 
             target_module = self.model.layers[decoder_idx]
-            if decoder_part == "self_attn": target_module = target_module.self_attn
-            elif decoder_part == "mlp": target_module = target_module.mlp
-            else: raise ValueError(f" ## Error: unsupported layer in {self.lora_path}: {key}")
+            if decoder_part == "self_attn":
+                target_module = target_module.self_attn
+            elif decoder_part == "mlp":
+                target_module = target_module.mlp
+            else:
+                raise ValueError(
+                    f" ## Error: unsupported layer in {self.lora_path}: {key}"
+                )
 
-            if   decoder_layer == "q_proj": target_module = target_module.q_proj
-            elif decoder_layer == "k_proj": target_module = target_module.k_proj
-            elif decoder_layer == "v_proj": target_module = target_module.v_proj
-            elif decoder_layer == "o_proj": target_module = target_module.o_proj
-            elif decoder_layer == "gate_proj": target_module = target_module.gate_proj
-            elif decoder_layer == "up_proj": target_module = target_module.up_proj
-            elif decoder_layer == "down_proj": target_module = target_module.down_proj
-            else: raise ValueError(f" ## Error: unsupported layer in {self.lora_path}: {key}")
+            if decoder_layer == "q_proj":
+                target_module = target_module.q_proj
+            elif decoder_layer == "k_proj":
+                target_module = target_module.k_proj
+            elif decoder_layer == "v_proj":
+                target_module = target_module.v_proj
+            elif decoder_layer == "o_proj":
+                target_module = target_module.o_proj
+            elif decoder_layer == "gate_proj":
+                target_module = target_module.gate_proj
+            elif decoder_layer == "up_proj":
+                target_module = target_module.up_proj
+            elif decoder_layer == "down_proj":
+                target_module = target_module.down_proj
+            else:
+                raise ValueError(
+                    f" ## Error: unsupported layer in {self.lora_path}: {key}"
+                )
 
             # Check that shape is compatible
 
@@ -89,10 +108,17 @@ class ExLlamaLora:
             elif lora_half == "lora_B":
                 in_features = None
                 out_features = tensor.shape[0]
-            else: raise ValueError(f" ## Error: unsupported layer in {self.lora_path}: {key}")
+            else:
+                raise ValueError(
+                    f" ## Error: unsupported layer in {self.lora_path}: {key}"
+                )
 
-            if (in_features and in_features != target_module.in_features) or (out_features and out_features != target_module.out_features):
-                raise ValueError(f" ## Error: incompatible tensor shape in {self.lora_path}: {key}")
+            if (in_features and in_features != target_module.in_features) or (
+                out_features and out_features != target_module.out_features
+            ):
+                raise ValueError(
+                    f" ## Error: incompatible tensor shape in {self.lora_path}: {key}"
+                )
 
             # For efficiency, transpose adapter instead of transposing state during inference
 
@@ -100,7 +126,8 @@ class ExLlamaLora:
 
             # Pre-scale
 
-            if lora_half == "lora_B" and self.lora_scaling != 1.0: tensor.mul_(self.lora_scaling)
+            if lora_half == "lora_B" and self.lora_scaling != 1.0:
+                tensor.mul_(self.lora_scaling)
 
             # Check that dtype is compatible, or convert
 
@@ -113,12 +140,15 @@ class ExLlamaLora:
             elif tensor.dtype == torch.float16:
                 pass
 
-            else: raise ValueError(f" ## Error: unsupported tensor dtype in {self.lora_path}")
+            else:
+                raise ValueError(
+                    f" ## Error: unsupported tensor dtype in {self.lora_path}"
+                )
 
             # Move to target device
 
             device = self.config.device_map.map(target_key)
-            tensor = tensor.to(device, non_blocking = True)
+            tensor = tensor.to(device, non_blocking=True)
 
             # Store adapter tensor
 

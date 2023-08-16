@@ -7,7 +7,9 @@ import torch
 
 # Directory containt model, tokenizer, generator
 
-model_directory = "/mnt/str/models/_test_models/Neko-Institute-of-Science_LLaMA-7B-4bit-128g/"
+model_directory = (
+    "/mnt/str/models/_test_models/Neko-Institute-of-Science_LLaMA-7B-4bit-128g/"
+)
 
 # Directory containing LoRA config and weights
 
@@ -25,14 +27,16 @@ lora_path = os.path.join(lora_directory, "adapter_model.bin")
 
 # Create config, model, tokenizer and generator
 
-config = ExLlamaConfig(model_config_path)               # create config from config.json
-config.model_path = model_path                          # supply path to model weights file
+config = ExLlamaConfig(model_config_path)  # create config from config.json
+config.model_path = model_path  # supply path to model weights file
 
-model = ExLlama(config)                                 # create ExLlama instance and load the weights
-tokenizer = ExLlamaTokenizer(tokenizer_path)            # create tokenizer from tokenizer model file
+model = ExLlama(config)  # create ExLlama instance and load the weights
+tokenizer = ExLlamaTokenizer(
+    tokenizer_path
+)  # create tokenizer from tokenizer model file
 
-cache = ExLlamaCache(model)                             # create cache for inference
-generator = ExLlamaGenerator(model, tokenizer, cache)   # create generator
+cache = ExLlamaCache(model)  # create cache for inference
+generator = ExLlamaGenerator(model, tokenizer, cache)  # create generator
 
 # Load LoRA
 
@@ -48,13 +52,14 @@ generator.settings.typical = 0.0
 
 # Alpaca prompt
 
-prompt = \
-    "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n" \
-    "\n" \
-    "### Instruction:\n" \
-    "List five colors in alphabetical order.\n" \
-    "\n" \
+prompt = (
+    "Below is an instruction that describes a task. Write a response that appropriately completes the request.\n"
+    "\n"
+    "### Instruction:\n"
+    "List five colors in alphabetical order.\n"
+    "\n"
     "### Response:"
+)
 
 # Generate with LoRA
 
@@ -63,7 +68,7 @@ print("")
 
 generator.lora = lora
 torch.manual_seed(1337)
-output = generator.generate_simple(prompt, max_new_tokens = 200)
+output = generator.generate_simple(prompt, max_new_tokens=200)
 print(output)
 
 # Generate without LoRA
@@ -74,6 +79,5 @@ print("")
 
 generator.lora = None
 torch.manual_seed(1337)
-output = generator.generate_simple(prompt, max_new_tokens = 200)
+output = generator.generate_simple(prompt, max_new_tokens=200)
 print(output)
-
