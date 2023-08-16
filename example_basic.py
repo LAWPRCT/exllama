@@ -5,7 +5,7 @@ import os, glob
 
 # Directory containing model, tokenizer, generator
 
-model_directory = "/mnt/str/models/llama-13b-4bit-128g/"
+model_directory =  "/home/jeff/llm-models/TheBloke_upstage-llama-30b-instruct-2048-GPTQ_gptq-4bit-32g-actorder_True"
 
 # Locate files we need within that directory
 

@@ -4,3 +4,8 @@ __pycache__/
 # editor files
 .vscode/
 
+# virtualenv
+venv/
+
+# misc
+activate
