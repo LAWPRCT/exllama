@@ -76,7 +76,7 @@ def batch(model_dir, batch_size, max_new_tokens):
         else:
             prompts_and_outputs = list(zip(prompts, output))
             for pair in prompts_and_outputs:
-                print(f"\n------------------------\nPrompt: `{pair[0]}`\n\nOutput: `{pair[1]}`\n'")
+                print(f"\n------------------------\nPrompt: \n```\n{pair[0]}\n```\n\nOutput: \n```\n{pair[1]}\n```\n'")
 
 
 if __name__ == "__main__":
